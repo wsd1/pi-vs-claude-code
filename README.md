@@ -1,3 +1,16 @@
+# Fork说明
+
+来源于  https://github.com/disler/pi-vs-claude-code 
+
+这个作者在Youtube上发表的 视频： [The Pi Coding Agent: The ONLY REAL Claude Code COMPETITOR](https://www.youtube.com/watch?v=f8cfH5XX-XU&t=7s) 展示了Pi-code-agent诸多的扩展功能，让我学习很多。
+
+本文件夹放置一些有用的示例，和我（以及AI）的分析文档。
+
+[分析：subagent-widget.ts子agent的实现](分析：subagent-widget.ts子agent的实现.md)
+
+[分析：system-select.ts的基本原理](分析：system-select.ts的基本原理.md)
+
+
 # pi-vs-cc
 
 A collection of [Pi Coding Agent](https://github.com/mariozechner/pi-coding-agent) customized instances. _Why?_ To showcase what it looks like to hedge against the leader in the agentic coding market, Claude Code. Here we showcase how you can customize the UI, agent orchestration tools, safety auditing, and cross-agent integrations. 
