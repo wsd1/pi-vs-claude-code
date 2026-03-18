@@ -6,6 +6,15 @@
 
 本文件夹放置一些有用的示例，和我（以及AI）的分析文档。
 
+---
+20260318:
+
+今天终于看完了 subagent-widget.ts 和 agent-team.ts的原理，兴奋开心。尤其是这两个收敛结果的过程不同，给我很大启发。
+请看文档 [两种subAgent合并结果到主Agent的方式对比](两种subAgent合并结果到主Agent的方式对比.md)。
+作为对比，PiCodeAgent 自带的subAgent方案（coding-agent/example/extensions）采用的也是tool return方式返回的结果。
+
+**subAgent的概念绝对将原本单纯的助手变成了“操作系统”**，是不能不搞清楚用起来的重中之重。目前看到的实现中，有些做的比较复杂，还引入了chain的形态。其实我觉得 subAgent保持独立使用sendMessage发送 customType: "subagent-result" 类型消息挺好的。尤其今天帮我分析写文的AI建议subAgent在提供结果的同时，还能提供一个再引导的字段，对主Agent因势利导，也能达成串联agent的作用。
+
 [分析：subagent-widget.ts子agent的实现](分析：subagent-widget.ts子agent的实现.md)
 
 [分析：system-select.ts的基本原理](分析：system-select.ts的基本原理.md)
