@@ -187,7 +187,8 @@ export default function (pi: ExtensionAPI) {
 				state.proc = undefined;
 				updateWidgets();
 
-				const result = state.textChunks.join("");
+				const result = state.textChunks.join("").replace(/<think>[\s\S]*?<\/think>/g, '');
+
 				ctx.ui.notify(
 					`Subagent #${state.id} ${state.status} in ${Math.round(state.elapsed / 1000)}s`,
 					state.status === "done" ? "success" : "error"
@@ -195,7 +196,9 @@ export default function (pi: ExtensionAPI) {
 
 				pi.sendMessage({
 					customType: "subagent-result",
-					content: `Subagent #${state.id}${state.turnCount > 1 ? ` (Turn ${state.turnCount})` : ""} finished "${prompt}" in ${Math.round(state.elapsed / 1000)}s.\n\nResult:\n${result.slice(0, 8000)}${result.length > 8000 ? "\n\n... [truncated]" : ""}`,
+					content: `下面信息来自 Subagent #${state.id}${state.turnCount > 1 ? ` (Turn ${state.turnCount})` : ""}，经由本通道转发。其使用${Math.round(state.elapsed / 1000)}秒完成了任务。以下是任务记录:` +
+							`\n---\nTask:\n${prompt}\n\nResult:\n${result.slice(0, 8000)}${result.length > 8000 ? "\n\n... [truncated]" : ""}` +
+							`\n---\n当前subAgent仍在后台待命，不要忘记清理。`,
 					display: true,
 				}, { deliverAs: "followUp", triggerTurn: true });
 
@@ -217,9 +220,9 @@ export default function (pi: ExtensionAPI) {
 
 	pi.registerTool({
 		name: "subagent_create",
-		description: "Spawn a background subagent to perform a task. Returns the subagent ID immediately while it runs in the background. Results will be delivered as a follow-up message when finished.",
+		description: "部署任务在后台完成，会返回 subagent ID。",
 		parameters: Type.Object({
-			task: Type.String({ description: "The complete task description for the subagent to perform" }),
+			task: Type.String({ description: "任务要求（说清楚目标，提供辅助说明，不用安排细节）" }),
 		}),
 		execute: async (callId, args, _signal, _onUpdate, ctx) => {
 			widgetCtx = ctx;
@@ -241,7 +244,7 @@ export default function (pi: ExtensionAPI) {
 			spawnAgent(state, args.task, ctx);
 
 			return {
-				content: [{ type: "text", text: `Subagent #${id} spawned and running in background.` }],
+				content: [{ type: "text", text: `Subagent #${id} 任务已部署。请等候任务完成报告（请结束这一轮对话）。` }],
 			};
 		},
 	});
@@ -250,8 +253,8 @@ export default function (pi: ExtensionAPI) {
 		name: "subagent_continue",
 		description: "Continue an existing subagent's conversation. Use this to give further instructions to a finished subagent. Returns immediately while it runs in the background.",
 		parameters: Type.Object({
-			id: Type.Number({ description: "The ID of the subagent to continue" }),
-			prompt: Type.String({ description: "The follow-up prompt or new instructions" }),
+			id: Type.Number({ description: "subagent的编号" }),
+			prompt: Type.String({ description: "任务要求（说清楚目标，提供辅助说明，不用安排细节）" }),
 		}),
 		execute: async (callId, args, _signal, _onUpdate, ctx) => {
 			widgetCtx = ctx;
@@ -274,7 +277,7 @@ export default function (pi: ExtensionAPI) {
 			spawnAgent(state, args.prompt, ctx);
 
 			return {
-				content: [{ type: "text", text: `Subagent #${args.id} continuing conversation in background.` }],
+				content: [{ type: "text", text: `Subagent #${args.id} 已经接收任务，必须结束这一轮对话才能接收到任务完成报告` }],
 			};
 		},
 	});
